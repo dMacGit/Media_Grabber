@@ -10,7 +10,6 @@ from threading import Thread
 from queue import Queue
 
 import logging
-import LogMessage
 
 import time
 
@@ -20,7 +19,7 @@ subprocessReturnQueue = Queue()
 
 disk_Check_Queue = Queue()
 
-#Special queue to pass data/results back from subprocess thread to main
+# special queue to pass data/results back from subprocess thread to main
 subprocessResultsQueue = Queue()
 
 returned_Data_Queue = Queue()
@@ -32,11 +31,24 @@ logging.basicConfig(level=logging.INFO,
 
 platform_lunix = False
 
-#App configs
-output_file_name = 'test.log'   #While still testing named "test.log. Change to "makemkvcon.log" later
-output_home_dir = '/opt/media_grabber'
+# App configs
+
+# While still testing named "test.log. Change to "makemkvcon.log" later
+output_file_name = 'test.log'
+output_home_dir = '/opt/Media_Grabber'
 output_log_dir = '/logs'
-output_file_path = output_home_dir+output_log_dir+'/'
+output_file_path = output_home_dir + output_log_dir + '/'
+
+#Setting custom profile for makemkv to use
+makeMkv_profile_dir = "/home/phantom/.MakeMKV/"
+makeMkv_profile_file = "phantoms.mmcp.xml" #This is some profile to match your ripping requirements
+makeMkv_profile_options = "--profile=" + makeMkv_profile_dir + makeMkv_profile_file
+
+makeMkv_media_dest_dir = "/media/media/Rips"
+
+#Command to rip first title on dev:/dev/sr01 using profile
+#makemkvcon --profile=/home/phantom/.MakeMKV/phantoms.mmcp.xml mkv dev:/dev/sr0 0 /media/media/Rips
+
 
 # Search parameters:
 search_bluray = True
@@ -50,57 +62,58 @@ global found_dvd
 found_alt_dvd = False
 found_cd = False
 
-#Device objects
+# Device objects
 br_Device_Object = None
 dvd_Device_Object = None
 cd_Device_Object = None
 
-#Device Arrays
+# Device Arrays
 BR_Device_List = {}
 DVD_Device_List = {}
 CD_Device_List = {}
 
-#Formatting / Debug log values
+# Formatting / Debug log values
 app_log_mesg = "|Media_Grabber| "
 make_log_mesg = "<<Makemkvcon>> "
 handbrake_log_mesg = "<<[Handbrake>]> "
 
 
-#Exit variables
+# Exit variables
 
 SHUTDOWN_TRIGGERED = False
 
 
-class device_Object(object) :
+class device_Object(object):
     '''
     Device object
     - Hold info about a device that is found on computer
     '''
-    def __init__(self,data):
+    def __init__(self, data):
         '''
         Strips out raw data into usable variables
         :param data: the raw data as input
         '''
         self.data = str(data).split(',')
         self.driveID = self.data[0]
-        #2nd Value Unknown
-        #3rd Value Unknown
-        #4th Value Unknown
+        # 2nd Value Unknown
+        # 3rd Value Unknown
+        # 4th Value Unknown
         self.deviceName = self.data[4]
-        #6th Value Unknown
+        # 6th Value Unknown
         self.devicePath = self.data[6]
 
     def __str__(self):
         returned = ""
         for index in range(len(self.data)):
-            returned += self.data[index]+"\n"
+            returned += self.data[index] + "\n"
         return returned
     def print_Short_Raw(self):
         '''
         Prints out the raw values to a string (No added comments etc)
         :return: A string with the raw output values
         '''
-        return ""+self.driveID+","+self.deviceName+","+self.devicePath
+        returned_value = "" + self.driveID + "," + self.deviceName + "," + self.devicePath
+        return returned_value
 
 class main_logging_thread_Class(threading.Thread):
     def __init__(self):
@@ -216,46 +229,65 @@ class main_drive_check_thread_Class(threading.Thread):
             message_Logging_Queue.put([app_log_mesg, devices_to_check])
             disk_Check_Queue.task_done()
 
-            self.stop()
-            trigger_Shutdown()
+            #<<<--------Trigger shutdown went here! [Bellow commented out]
             print("___Return drive check thread stop triggered!")
 
-            """for item in devices_to_check:
+            """Example of subprocess call
+            find_devices_command = ["makemkvcon", "-r", "--cache=1", "info", "disc:9999",makeMkv_profile_options]
+            subprocessReturnQueue.put(find_devices_command)
+            main_return_subprocess_thread = main_return_subprocess_thread_Class()
+            main_return_subprocess_thread.subprocess_return_thread.start()
+            
+
+            result = subprocessResultsQueue.get()
+            subprocessResultsQueue.task_done()
+            """
+
+            for item in devices_to_check:
                 print(item)
             for device in devices_to_check:
                 # Running through devices to find discs
                 device_value = devices_to_check[device]
                 message_Logging_Queue.put([app_log_mesg, "Checking device... " + str(device_value)])
                 #print("checking disk/drive {}", device_value)
-                check_for_disk_command = ['blkid', '' + device_value.devicePath.replace("\"", "")]
+                formatted_device_string = device_value.devicePath.replace("\"", "")
+                check_for_disk_command = ['blkid', '' + formatted_device_string]
                 message_Logging_Queue.put([app_log_mesg, "Running command ... " + str(check_for_disk_command)])
-                subprocessQueue.put(check_for_disk_command)
+                subprocessReturnQueue.put(check_for_disk_command)
+                main_return_subprocess_thread = main_return_subprocess_thread_Class()
+                main_return_subprocess_thread.subprocess_return_thread.start()
                 disk_check_first = subprocessResultsQueue.get()
                 subprocessResultsQueue.task_done()
-                # disk_check_echo = run_subprocess_command(['echo','$?'])
+                message_Logging_Queue.put([app_log_mesg,"Scanning disk: "+disk_check_first])
+                """disk_check_echo = run_subprocess_command(['echo','$?'])
                 returnCode = disk_check_first[1]
                 #print(check_for_disk_command, "returned:", disk_check_first[1])
                 # If disc detected get info
                 # No disk[2] > 0 error.
-                if int(returnCode) > 0:
-                    pass
-                elif returnCode is 0:
-                    make_disco_info_command = ['makemkvcon', '-r', '--cache=1', 'info',
-                                               'dev:' + device_value.devicePath.replace("\"", "")]
-                    print("Make run command on dev: test path: " + make_disco_info_command[-1])
-                    subprocessQueue.put((make_disco_info_command)[0])
-                    result = subprocessResultsQueue.get()
-                    subprocessResultsQueue.task_done()
-                    message_Logging_Queue.put((make_log_mesg, result))
+                """
+                make_disco_info_command = ['makemkvcon', '-r', '--cache=1', 'info',
+                                           'dev:' + formatted_device_string,makeMkv_profile_options]
+                message_Logging_Queue.put([app_log_mesg, "Make run command on dev: test path: " + str(make_disco_info_command)])
+                print("Make run command on dev: test path: " + str(make_disco_info_command))
+                subprocessReturnQueue.put(make_disco_info_command)
+                main_return_subprocess_thread = main_return_subprocess_thread_Class()
+                main_return_subprocess_thread.subprocess_return_thread.start()
+                result = subprocessResultsQueue.get()
+                subprocessResultsQueue.task_done()
+                print(result)
+                message_Logging_Queue.put([make_log_mesg, result])
                 
-                disk_Check_Queue.task_done()"""
+                #disk_Check_Queue.task_done()
+                self.stop()
+                trigger_Shutdown()
         print("=>Return drive check thread End!<=")
+        #[Above was commented out to here]
 
-'''
+"""
 def check_for_disks(devices_to_check):
     #starting search for movies/episodes
     
-    Running command on selected/found drives.
+    #Running command on selected/found drives.
     #"makemkvcon -r --cache=1 info dev:/dev/sr1" Example
     
     message_Logging_Queue.put((app_log_mesg, "Devices to check... "+str(devices_to_check)))
@@ -279,7 +311,7 @@ def check_for_disks(devices_to_check):
             make_disco_info_command = ['makemkvcon', '-r', '--cache=1', 'info', 'dev:'+device_value.devicePath.replace("\"","")]
             print("Make run command on dev: test path: "+make_disco_info_command[-1])
             result = run_subprocess_command(make_disco_info_command)[0]
-            message_Logging_Queue.put((make_log_mesg,result))'''
+            message_Logging_Queue.put((make_log_mesg,result))"""
 
 
 def clear_test_log () :
@@ -355,7 +387,7 @@ def initialize(search_bluray=True,search_Dvd=True, search_Cd=False, search_altDv
         message_Logging_Queue.put([app_log_mesg, "Grabbing Device/Drive info:"])
         #newLog = LogMessage(app_log_mesg, "Lunix Platform OS detected...")
         message_Logging_Queue.put([app_log_mesg,"==============================="])
-        find_devices_command = ["makemkvcon", "-r", "--cache=1", "info", "disc:9999"]
+        find_devices_command = ["makemkvcon", "-r", "--cache=1", "info", "disc:9999",makeMkv_profile_options]
         subprocessReturnQueue.put(find_devices_command)
         main_return_subprocess_thread = main_return_subprocess_thread_Class()
         main_return_subprocess_thread.subprocess_return_thread.start()
