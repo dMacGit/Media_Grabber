@@ -6,7 +6,10 @@ private_link_file = "private_link.txt"
 
 # Create your views here.
 def home(request):
-    return HttpResponse("Welcome to the Media Grabber Frontend!")
+    template = loader.get_template('frontend/media_grabber_home.html')
+    context = {"output_data": None}
+    return HttpResponse(template.render(context, request))
+    #return HttpResponse("Welcome to the Media Grabber Frontend!")
     """
     template = loader.get_template('home/index.html')
     private_link = open_private()
