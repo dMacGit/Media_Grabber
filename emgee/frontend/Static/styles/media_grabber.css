@@ -1,0 +1,142 @@
+body
+{
+	background-color: gray;
+}
+
+/***********************
+	GLOBAL CLASSES
+************************/
+
+.large_rounded_section
+{
+	border: none;
+	border-radius: 45px;
+	padding: 1em 3em 0 3em;
+}
+
+.hidden-button
+{
+	
+	border: none;
+  	color: white;
+  	text-align: right;
+  	text-decoration: none;
+  	/*display: inline-block;*/
+}
+
+/*.wrapper-center
+{
+	display: block
+	grid-row-start: 1;
+	grid-row-end: 2;
+	grid-column-start: 2;
+	grid-column-end: 3;
+}
+
+.wrapper-right
+{
+	text-align: right;
+	grid-row-start: 1;
+	grid-row-end: 2;
+	grid-column-start: 3;
+	grid-column-end: 4;
+}
+
+.wrapper-left
+{
+	text-align: left;
+	grid-row-start: 1;
+	grid-row-end: 2;
+	grid-column-start: 1;
+	grid-column-end: 2;
+
+}*/
+
+/***********************
+	SPECIFIC CLASSES
+************************/
+
+.device-logs
+{
+	background-color: grey;
+}
+
+.view-device
+{
+	background-color: #4CAF50;
+}
+
+.device-line-item
+{
+	background-color: none;
+	line-height: 1em;
+	height: 1em;
+	display: grid;
+	/*grid-template-rows: 1;
+	grid-template-columns: 3;*/
+	padding-top: .5em;
+	padding-bottom: .5em;
+
+	display: grid;
+	grid-template-rows: 1;
+	grid-template-columns: repeat(6,1fr);
+  	grid-template-areas: 
+  		"devname fullname fullname fullname logs view"
+}
+
+.p-line-item
+{
+	width: auto;
+	height: 1em;
+	display: inline-block;
+    margin-block-start: 0em;
+    margin-block-end: 0em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+}
+
+.devname
+{
+	grid-area: devname;
+	
+}
+
+.fullname
+{
+	grid-area: fullname;
+}
+
+.logs
+{
+	grid-area: logs;
+}
+
+.view
+{
+	grid-area: view;
+}
+
+/*.hidden-button
+{
+	display: inline-block;
+}*/
+
+/***********************
+	DIVS
+************************/
+
+#devices-summary-section
+{
+	width: auto;
+	height: 300px;
+	background-color: white;
+	
+}
+
+
+
+
+							
+
+
+
