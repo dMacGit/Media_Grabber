@@ -1,15 +1,21 @@
 from django.http import HttpResponse
 from django.template import loader
+from django.contrib.staticfiles import finders
+from django.contrib.staticfiles.storage import staticfiles_storage
+
 
 private_link_path = "home/private_data/"
 private_link_file = "private_link.txt"
 
 # Create your views here.
-def home(request):
-    template = loader.get_template('frontend/media_grabber_home.html')
-    context = {"output_data": None}
-    return HttpResponse(template.render(context, request))
+def frontend(request):
+
     #return HttpResponse("Welcome to the Media Grabber Frontend!")
+    template = loader.get_template('frontend/media_grabber_home.html')
+
+    context = {"output_data": "<p>Done!</p>"}
+    return HttpResponse(template.render(context, request))
+
     """
     template = loader.get_template('home/index.html')
     private_link = open_private()
@@ -21,7 +27,10 @@ def home(request):
     """
 
 def logs(request):
-    return HttpResponse("This is the Logs page!")
+    #return HttpResponse("This is the Logs page!")
+    template = loader.get_template('frontend/media_grabber_logs.html')
+    context = {"output_data": None}
+    return HttpResponse(template.render(context, request))
     """
     template = loader.get_template('home/index.html')
     private_link = open_private()

@@ -2,12 +2,15 @@
 <html>
 	<head>
 		<meta charset="UTF-8">
-		<title>Media Grabber Home</title>
-		<!--<meta http-equiv="refresh" content="5" >-->
-		<link href="media_grabber.css" rel="stylesheet">
+		<title>Media Grabber Global Logs</title>
+		{% load static %}
+		<link rel="stylesheet" href="{% static 'frontend/emgee.css' %}" type="txt/css">
 	</head>
 	<body>
-		<div id="devices-summary-section" class="large_rounded_section">
+		<div id="global-logs-section" class="large_rounded_section">
+			<p>some text</p>
+		</div>
+        <div id="devices-summary-section" class="large_rounded_section">
 			<div id="devices-summary-title" class="devices-title">
 				<h2>Current Devices:</h2>
 			</div>
@@ -43,6 +46,5 @@
 				</div>
 			</div>
 		</div>
-		
 	</body>
 </html>
