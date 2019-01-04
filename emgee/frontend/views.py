@@ -27,7 +27,7 @@ def frontend(request):
     """
 
 def logs(request):
-    #return HttpResponse("This is the Logs page!")
+    #return HttpResponse("This is the logs page!")
     template = loader.get_template('frontend/media_grabber_logs.html')
     context = {"output_data": None}
     return HttpResponse(template.render(context, request))

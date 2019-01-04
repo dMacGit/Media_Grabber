@@ -13,6 +13,9 @@ import logging
 
 import time
 
+import os
+#SITE_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 message_Logging_Queue = Queue()
 subprocessQueue = Queue()
 subprocessReturnQueue = Queue()
@@ -31,14 +34,20 @@ logging.basicConfig(level=logging.INFO,
 
 platform_lunix = False
 
+#Important thread classes
+
+
 # App configs
 
 # While still testing named "test.log. Change to "makemkvcon.log" later
 output_file_name = 'test.log'
-output_home_dir = '/opt/Media_Grabber'
-output_log_dir = '/logs'
-output_file_path = output_home_dir + output_log_dir + '/'
-
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+#output_home_dir = os.path.join(BASE_DIR, 'logs')
+print(BASE_DIR)
+output_log_dir = os.path.join(BASE_DIR, 'logs/') #'/logs'
+output_file_path = output_log_dir
+#output_file_path = output_home_dir + output_log_dir + '/'
+print(output_file_path)
 #Setting custom profile for makemkv to use
 makeMkv_profile_dir = "/home/phantom/.MakeMKV/"
 makeMkv_profile_file = "phantoms.mmcp.xml" #This is some profile to match your ripping requirements
@@ -474,25 +483,26 @@ def shutdown():
     disk_Check_Queue.join()
     returned_Data_Queue.join()
 
+    print("End of program!")
 
+def start_app_Threads():
+    main_drive_check_thread.drive_Check_Thread.start()
 
-"""Creating and starting all thread classes"""
+    main_logging_thread.loggingThread.start()
+
+#Keep these here!
 main_logging_thread = main_logging_thread_Class()
-
 main_drive_check_thread = main_drive_check_thread_Class()
 
-main_drive_check_thread.drive_Check_Thread.start()
-
-main_logging_thread.loggingThread.start()
 
 """
-    Initialize function:
+Need to call functions in this order:
+- start_app_Threads() <- When starting server
+- initialize() <- starts server logic
 
-    Main entry point into program.
-    - This needs to be changed, hand off/move init code to correct functions.
-    - This function is too long.
+When shutting down:
+- shutdown()
 """
-initialize()
 
-shutdown()
-print("End of program!")
+
+
