@@ -1,0 +1,1 @@
+-e git://github.com/dMacGit/emgee_core.git#egg=emgee_core
