@@ -1,1 +1,2 @@
+pip install
 git+git://github.com/dMacGit/emgee_core.git@master#egg=emgee_core
