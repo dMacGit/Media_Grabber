@@ -2,7 +2,7 @@
 emgee/frontend/Static/Example Pages/
 emgee/frontend/private/
 emgee/emgee/static/admin/
-emgee/src
+/src
 
 # Pycharm IDE files
 .idea/
