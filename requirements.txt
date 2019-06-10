@@ -1,2 +1,2 @@
-pip install
-git+git://github.com/dMacGit/emgee_core.git@master#egg=emgee_core
+-e git://github.com/dMacGit/meta_core.git#egg=meta_core
+-e git://github.com/dMacGit/emgeecore.git#egg=emgeecore

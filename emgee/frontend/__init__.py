@@ -1,4 +1,4 @@
-from .Modules import main
+import main
 
 """Need to call functions in this order:
 - init_app_Threads()
@@ -8,6 +8,4 @@ from .Modules import main
 When shutting down:
 - shutdown()
 """
-main.start_app_Threads()
-#main.initialize()
-#main.shutdown()
+main.start()
