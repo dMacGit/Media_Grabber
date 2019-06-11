@@ -2,6 +2,7 @@
 emgee/frontend/Static/Example Pages/
 emgee/frontend/private/
 emgee/emgee/static/admin/
+emgee/settings/secrets.json
 /src
 
 # Pycharm IDE files
