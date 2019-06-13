@@ -1,4 +1,4 @@
-import main
+from core import start_app_Threads, initialize, shutdown
 
 """Need to call functions in this order:
 - init_app_Threads()
@@ -8,4 +8,6 @@ import main
 When shutting down:
 - shutdown()
 """
-main.start()
+start_app_Threads()
+initialize()
+# Wait for termination
